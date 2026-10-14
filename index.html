@@ -1,0 +1,2938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BackendArch.Jorge | Masterclass Definitiva de Arquitectura Backend</title>
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #111827;
+      --bg-card: #1f2937;
+      --bg-card-hover: #283548;
+      --border-color: #374151;
+      --border-focus: #60a5fa;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --accent-rose: #f43f5e;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-mono: 'Fira Code', 'Cascadia Code', Consolas, Monaco, monospace;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+      --shadow-glow: 0 0 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .light-theme {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #f1f5f9;
+      --bg-card-hover: #e2e8f0;
+      --border-color: #cbd5e1;
+      --border-focus: #3b82f6;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-blue);
+    }
+
+    .container {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(17, 24, 39, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+    .light-theme header {
+      background: rgba(255, 255, 255, 0.92);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .logo-icon {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.1);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-icon {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .btn-icon:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    /* HERO */
+    .hero {
+      padding: 4.5rem 0 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 750px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.28) 0%, rgba(139, 92, 246, 0.12) 50%, transparent 80%);
+      filter: blur(60px);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: var(--accent-cyan);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.3px;
+    }
+    .hero-title {
+      font-size: 2.9rem;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 75%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .light-theme .hero-title {
+      background: linear-gradient(135deg, #0f172a 30%, #1e40af 75%, #6b21a8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-description {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 860px;
+      margin-bottom: 2rem;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    }
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: 4.5rem 0;
+      border-top: 1px solid var(--border-color);
+    }
+    .section-header {
+      margin-bottom: 2.5rem;
+    }
+    .section-tag {
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.75rem;
+    }
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 820px;
+    }
+
+    /* CARDS */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: var(--shadow-md);
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+    }
+    .icon-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+    .icon-purple { background: rgba(139, 92, 246, 0.15); color: var(--accent-purple); }
+    .icon-emerald { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+    .icon-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+    .icon-cyan { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+    .icon-rose { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+
+    .card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      line-height: 1.55;
+    }
+    .card-badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 1rem;
+    }
+    .badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* CONTRAST BOX */
+    .contrast-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2.25rem;
+      margin-top: 2rem;
+    }
+    .contrast-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .contrast-col h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.18rem;
+      margin-bottom: 1.25rem;
+    }
+    .contrast-col.bad h4 { color: var(--accent-rose); }
+    .contrast-col.good h4 { color: var(--accent-emerald); }
+    .contrast-list {
+      list-style: none;
+    }
+    .contrast-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 0.95rem;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .contrast-list li::before {
+      content: '✕';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent-rose);
+      font-weight: bold;
+    }
+    .contrast-col.good .contrast-list li::before {
+      content: '✓';
+      color: var(--accent-emerald);
+    }
+
+    /* =========================================================
+       SECTION 3: ARCHITECTURE DEEP DIVE (EXPANDED FOR JORGE)
+    ========================================================= */
+    .arch-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .arch-tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .arch-tab-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-blue);
+    }
+    .arch-tab-btn.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--accent-blue);
+      color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+    }
+
+    .arch-panel {
+      display: none;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2.25rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .arch-panel.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Sub-tabs inside each architecture */
+    .arch-subnav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .subnav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .subnav-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .subnav-btn.active {
+      background: var(--bg-card);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .subview-content {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .subview-content.active {
+      display: block;
+    }
+
+    /* Folder Tree Visualization */
+    .file-tree {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+    .tree-folder { color: #e3b341; font-weight: bold; }
+    .tree-file { color: #79c0ff; }
+    .tree-comment { color: #8b949e; font-style: italic; font-size: 0.78rem; }
+    .tree-item { margin-left: 1.25rem; }
+
+    /* Layer Rules Table */
+    .layer-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .layer-table th, .layer-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+    .layer-table th {
+      background: var(--bg-card);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .layer-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .tag-allowed {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--accent-emerald);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+    .tag-forbidden {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid var(--accent-rose);
+      color: #fb7185;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    /* Senior Callout Card */
+    .senior-callout {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(59, 130, 246, 0.08));
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.25rem;
+    }
+    .senior-callout h4 {
+      color: #c084fc;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .senior-callout p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    /* Step Path Diagram Card */
+    .path-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 1rem;
+    }
+    .path-step-item {
+      display: flex;
+      gap: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 16px;
+      align-items: flex-start;
+    }
+    .path-num {
+      background: var(--accent-blue);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .path-content strong {
+      display: block;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+    .path-content span {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       SECTION 4: SIMULATOR (ENHANCED WITH JORGE PAYLOADS)
+    ========================================================= */
+    .simulator-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .sim-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .sim-scenario-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sim-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .sim-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .sim-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .sim-btn:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+    .sim-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .sim-btn.primary {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+    .sim-btn.primary:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .pipeline-step {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .pipeline-step:hover {
+      border-color: var(--accent-blue);
+    }
+    .pipeline-step.active {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.12);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.35);
+      transform: translateY(-4px);
+    }
+    .pipeline-step.completed {
+      border-color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .pipeline-step.error-state {
+      border-color: var(--accent-rose) !important;
+      background: rgba(244, 63, 94, 0.15) !important;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.4) !important;
+    }
+    .step-number {
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.1);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+    .pipeline-step.active .step-number {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+    .pipeline-step.completed .step-number {
+      background: var(--accent-emerald);
+      color: #000;
+    }
+    .pipeline-step.error-state .step-number {
+      background: var(--accent-rose);
+      color: #fff;
+    }
+    .step-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step-role {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .data-packet {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-amber);
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+      animation: pulse 1.5s infinite;
+      z-index: 10;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.1); }
+    }
+
+    .sim-inspector {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 1.5rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+    .inspector-content h4 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .inspector-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 1.25rem;
+    }
+    .inspector-points {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+    .inspector-points li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .inspector-points li strong {
+      color: var(--text-primary);
+    }
+    .bullet-point {
+      color: var(--accent-cyan);
+      font-weight: bold;
+    }
+    .code-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .code-header {
+      background: #161b22;
+      padding: 8px 14px;
+      font-size: 0.78rem;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #30363d;
+      font-family: var(--font-mono);
+    }
+    .code-body {
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #c9d1d9;
+      overflow-x: auto;
+      line-height: 1.55;
+      white-space: pre;
+    }
+
+    /* DECISION & QUIZ */
+    .decision-tool, .quiz-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 2.25rem;
+    }
+    .decision-question { margin-bottom: 1.5rem; }
+    .decision-question label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      font-size: 1.05rem;
+    }
+    .decision-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .option-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .option-card:hover { border-color: var(--accent-blue); }
+    .option-card.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--text-primary);
+    }
+    .recommendation-box {
+      margin-top: 2rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+      border: 1px solid var(--accent-blue);
+      border-radius: 14px;
+      padding: 1.75rem;
+      display: none;
+    }
+    .recommendation-box.show {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    /* QUIZ */
+    .quiz-q-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .quiz-opt {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 18px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      text-align: left;
+      color: var(--text-primary);
+    }
+    .quiz-opt:hover:not(.disabled) {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+    }
+    .quiz-opt.correct {
+      background: rgba(16, 185, 129, 0.15) !important;
+      border-color: var(--accent-emerald) !important;
+      color: var(--accent-emerald) !important;
+    }
+    .quiz-opt.wrong {
+      background: rgba(244, 63, 94, 0.15) !important;
+      border-color: var(--accent-rose) !important;
+      color: var(--accent-rose) !important;
+    }
+    .quiz-feedback {
+      margin-top: 1rem;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.good {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--accent-emerald);
+      color: #34d399;
+    }
+    .quiz-feedback.bad {
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid var(--accent-rose);
+      color: #fb7185;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 3rem 0;
+      background: var(--bg-secondary);
+      margin-top: 4rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .pipeline { grid-template-columns: repeat(3, 1fr); }
+      .sim-inspector, .contrast-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2.1rem; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .pipeline { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container nav-container">
+      <a href="#hero" class="logo-area">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <span>BackendArch<span style="color:var(--accent-cyan)">.Jorge</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#que-es" class="active">¿Qué es?</a></li>
+        <li><a href="#importancia">Beneficios</a></li>
+        <li><a href="#tipos-arquitectura">Desglose de Arquitecturas</a></li>
+        <li><a href="#simulador-flujo">Simulador en Vivo</a></li>
+        <li><a href="#decision">Recomendador</a></li>
+        <li><a href="#quiz">Quiz</a></li>
+      </ul>
+
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="btn-icon" title="Cambiar tema">
+          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span id="themeText">Modo</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 16v-4"></path>
+          <path d="M12 8h.01"></path>
+        </svg>
+        Masterclass de Arquitectura Backend • Edición Senior
+      </div>
+      <h1 class="hero-title">Arquitectura de Software Backend:<br>Estructura de Capas y Flujo de Datos</h1>
+      <p class="hero-description">
+        Bienvenido a <strong>BackendArch.Jorge</strong>. Aprende qué es la arquitectura, por qué define el éxito o fracaso de un sistema, desglosa cada patrón a nivel de carpetas, reglas de importación y sigue el viaje paso a paso de los datos entre capas con simulaciones interactivas.
+      </p>
+      <div class="hero-cta">
+        <a href="#tipos-arquitectura" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Explorar Arquitecturas al Detalle
+        </a>
+        <a href="#simulador-flujo" class="btn-secondary">
+          Probar Simulador de Flujo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: ¿QUÉ ES UNA ARQUITECTURA? -->
+  <section id="que-es" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Fundamento Primordial</span>
+        <h2 class="section-title">1. ¿Qué es una Arquitectura en Backend?</h2>
+        <p class="section-subtitle">
+          No es simplemente "dónde pongo mis archivos", sino el conjunto de decisiones estructurales de más alto nivel que definen responsabilidades, límites de comunicación y reglas de dependencia para que el sistema sobreviva al tiempo.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon icon-blue">🏛️</div>
+          <h3>La Analogía del Rascacielos</h3>
+          <p>
+            Cualquiera puede clavar cuatro tablas y armar una choza en el patio, pero para levantar una torre de 40 pisos necesitas planos de cargas, cimientos antisísmicos, ductos de cableado aislados y rutas de evacuación. La arquitectura es ese plano que evita que el sistema colapse cuando aumenta el tráfico.
+          </p>
+          <div class="card-badge-list">
+            <span class="badge">Estructura</span>
+            <span class="badge">Cimientos</span>
+            <span class="badge">Límites</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-purple">🎯</div>
+          <h3>Separación de Incumbencias (SoC)</h3>
+          <p>
+            Cada componente debe tener <strong>una única razón para cambiar</strong> (Principio SRP). La capa web no debe saber de sentencias SQL, y las reglas del negocio no deben preocuparse si la petición provino de un navegador, un bot o un cron job.
+          </p>
+          <div class="card-badge-list">
+            <span class="badge">SoC</span>
+            <span class="badge">Desacoplamiento</span>
+            <span class="badge">SOLID</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-emerald">🔄</div>
+          <h3>Inversión de Dependencias (DIP)</h3>
+          <p>
+            Los módulos de alto nivel (el negocio) no deben depender de los módulos de bajo nivel (bases de datos, frameworks, APIs externas). Ambos deben depender de <strong>abstracciones e interfaces</strong> bien delimitadas.
+          </p>
+          <div class="card-badge-list">
+            <span class="badge">Interfaces</span>
+            <span class="badge">Contratos</span>
+            <span class="badge">Independencia</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTRAST TABLE -->
+      <div class="contrast-box">
+        <h3 style="margin-bottom:1.25rem;">Impacto Real: Código Espagueti vs Arquitectura Desacoplada</h3>
+        <div class="contrast-grid">
+          <div class="contrast-col bad">
+            <h4>⚠️ Código Espagueti (Sin Arquitectura)</h4>
+            <ul class="contrast-list">
+              <li>Controladores con 1,500 líneas haciendo consultas SQL directas y validaciones.</li>
+              <li>Si cambias el nombre de una columna en la base de datos, se rompe el frontend y el servicio de correos.</li>
+              <li>Escribir pruebas automatizadas es casi imposible sin encender una base de datos real.</li>
+              <li>Nuevos programadores tardan semanas en entender dónde colocar una nueva función.</li>
+              <li>El "Miedo a tocar el código": arreglas un bug en facturación y se cae el login.</li>
+            </ul>
+          </div>
+          <div class="contrast-col good">
+            <h4>✅ Arquitectura Limpia & Desacoplada</h4>
+            <ul class="contrast-list">
+              <li>Controlador ligero (~30 líneas): solo recibe HTTP, valida sintaxis y delega al caso de uso.</li>
+              <li>Puedes cambiar PostgreSQL por DynamoDB sin alterar una sola línea de lógica de negocio.</li>
+              <li>Pruebas unitarias que se ejecutan en 40 milisegundos usando mocks de interfaces.</li>
+              <li>Estructura intuitiva y predecible: cada archivo tiene un rol claro y delimitado.</li>
+              <li>El negocio evoluciona rápidamente sin efectos colaterales imprevistos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: IMPORTANCIA Y QUÉ SE LOGRA -->
+  <section id="importancia" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Objetivos de Calidad y Negocio</span>
+        <h2 class="section-title">2. ¿Por Qué es Importante y Qué se Logra?</h2>
+        <p class="section-subtitle">
+          Una buena arquitectura no es una obsesión académica; es el factor determinante que define si una empresa de software puede seguir innovando o se ahoga en costos de mantenimiento.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-icon icon-cyan">⚡</div>
+          <h3>1. Mantenibilidad y Agilidad</h3>
+          <p>
+            Reduce el costo de modificar el software a los 6 meses o 2 años. Los equipos pueden agregar funcionalidades sin tener que refactorizar el 80% del sistema existente.
+          </p>
+          <div class="card-badge-list"><span class="badge">Menos Bugs</span><span class="badge">Deploy Rápido</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-amber">📈</div>
+          <h3>2. Escalabilidad Sostenible</h3>
+          <p>
+            Permite escalar vertical u horizontalmente e incluso migrar módulos críticos a servicios independientes sin reconstruir todo el backend.
+          </p>
+          <div class="card-badge-list"><span class="badge">Alta Concurrencia</span><span class="badge">Rendimiento</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-emerald">🧪</div>
+          <h3>3. Testeabilidad Aislada</h3>
+          <p>
+            Al tener capas aisladas con interfaces, puedes simular dependencias (mocking) y probar cada regla matemática o de negocio de forma aislada en milisegundos.
+          </p>
+          <div class="card-badge-list"><span class="badge">Unit Tests</span><span class="badge">CI/CD Seguro</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-purple">👥</div>
+          <h3>4. Trabajo en Paralelo</h3>
+          <p>
+            Frontend, Backend y DevOps pueden trabajar simultáneamente contra interfaces y contratos OpenAPI/DTO sin bloquearse mutuamente.
+          </p>
+          <div class="card-badge-list"><span class="badge">Productividad</span><span class="badge">Sin Conflictos Git</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-rose">🛡️</div>
+          <h3>5. Seguridad y Resiliencia</h3>
+          <p>
+            Centraliza los puntos de autenticación, autorización, validación estricta de entradas y sanitización de datos antes de tocar motores de almacenamiento.
+          </p>
+          <div class="card-badge-list"><span class="badge">Prevención SQLi</span><span class="badge">RBAC / JWT</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon icon-blue">💰</div>
+          <h3>6. Menor Deuda Técnica</h3>
+          <p>
+            Evita el temido colapso donde un producto exitoso debe declararse en bancarrota técnica y "reescribirse desde cero" porque es inmanejable.
+          </p>
+          <div class="card-badge-list"><span class="badge">Ahorro de Costos</span><span class="badge">Alta Longevidad</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: DESGLOSE MÁXIMO DE TIPOS DE ARQUITECTURA -->
+  <section id="tipos-arquitectura" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Desglose Exhaustivo por Arquitectura</span>
+        <h2 class="section-title">3. Tipos de Arquitectura Backend al Detalle</h2>
+        <p class="section-subtitle">
+          Aquí analizamos cada patrón con visión de Arquitecto Senior: su árbol real de carpetas, qué tiene permitido y prohibido importar cada capa, cómo viajan los datos internamente y las trampas comunes de juniors.
+        </p>
+      </div>
+
+      <!-- MAIN TABS -->
+      <div class="arch-tabs">
+        <button class="arch-tab-btn active" onclick="switchMainArch('layered')">
+          <span>📦</span> 1. Monolito en Capas (N-Tier)
+        </button>
+        <button class="arch-tab-btn" onclick="switchMainArch('hexagonal')">
+          <span>⬡</span> 2. Arquitectura Hexagonal
+        </button>
+        <button class="arch-tab-btn" onclick="switchMainArch('clean')">
+          <span>🧅</span> 3. Clean / Onion Architecture
+        </button>
+        <button class="arch-tab-btn" onclick="switchMainArch('microservices')">
+          <span>🧩</span> 4. Microservicios Distribuidos
+        </button>
+        <button class="arch-tab-btn" onclick="switchMainArch('eda')">
+          <span>⚡</span> 5. Event-Driven (EDA)
+        </button>
+        <button class="arch-tab-btn" onclick="switchMainArch('cqrs')">
+          <span>⚖️</span> 6. CQRS & Event Sourcing
+        </button>
+      </div>
+
+      <!-- ========================================================
+           PANEL 1: MONOLITO EN CAPAS (LAYERED / N-TIER)
+      ======================================================== -->
+      <div id="panel-layered" class="arch-panel active">
+        <h3 style="font-size:1.45rem; margin-bottom:0.4rem;">1. Arquitectura en Capas Tradicional (N-Tier / Layered)</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+          Es la arquitectura más extendida en la industria para comenzar proyectos web. Organiza el código en estratos horizontales superpuestos, donde cada estrato solo ofrece servicios a la capa inmediatamente superior.
+        </p>
+
+        <!-- Subnav -->
+        <div class="arch-subnav">
+          <button class="subnav-btn active" onclick="switchSubView('layered', 'folders', this)">📁 Árbol de Carpetas Real</button>
+          <button class="subnav-btn" onclick="switchSubView('layered', 'rules', this)">🛡️ Reglas & Qué Puede Importar</button>
+          <button class="subnav-btn" onclick="switchSubView('layered', 'flow', this)">🔄 Cómo Viajan los Datos Paso a Paso</button>
+          <button class="subnav-btn" onclick="switchSubView('layered', 'senior', this)">🎓 Análisis Senior & Errores Comunes</button>
+        </div>
+
+        <!-- Subview 1: Folders -->
+        <div id="subview-layered-folders" class="subview-content active">
+          <div class="file-tree">
+            <span class="tree-folder">src/main/java/com/jorge/tienda/</span><br>
+            ├── <span class="tree-folder">controller/</span> <span class="tree-comment">// Capa Web / Entrada HTTP</span><br>
+            │   ├── <span class="tree-file">UserController.java</span> <span class="tree-comment">// Expone @PostMapping, valida @Valid</span><br>
+            │   └── <span class="tree-file">OrderController.java</span><br>
+            ├── <span class="tree-folder">dto/</span> <span class="tree-comment">// Objetos de Transferencia de Datos</span><br>
+            │   ├── <span class="tree-folder">request/</span> <span class="tree-comment">// CreateUserRequestDTO.java</span><br>
+            │   └── <span class="tree-folder">response/</span> <span class="tree-comment">// UserResponseDTO.java (¡Sin passwords!)</span><br>
+            ├── <span class="tree-folder">service/</span> <span class="tree-comment">// Capa de Negocio</span><br>
+            │   ├── <span class="tree-file">UserService.java</span> <span class="tree-comment">// Interfaz con los contratos del servicio</span><br>
+            │   └── <span class="tree-folder">impl/</span> <span class="tree-comment">// UserServiceImpl.java (Lógica real, @Transactional)</span><br>
+            ├── <span class="tree-folder">repository/</span> <span class="tree-comment">// Capa de Acceso a Datos</span><br>
+            │   └── <span class="tree-file">UserRepository.java</span> <span class="tree-comment">// Hereda de JpaRepository&lt;UserEntity, Long&gt;</span><br>
+            ├── <span class="tree-folder">entity/</span> <span class="tree-comment">// Modelo de Persistencia Relacional</span><br>
+            │   └── <span class="tree-file">UserEntity.java</span> <span class="tree-comment">// Mapeo a tabla de BD (@Entity, @Table)</span><br>
+            └── <span class="tree-folder">exception/</span> <span class="tree-comment">// Manejo Global</span><br>
+                └── <span class="tree-file">GlobalExceptionHandler.java</span> <span class="tree-comment">// @RestControllerAdvice</span>
+          </div>
+        </div>
+
+        <!-- Subview 2: Rules -->
+        <div id="subview-layered-rules" class="subview-content">
+          <table class="layer-table">
+            <thead>
+              <tr>
+                <th>Capa</th>
+                <th>Responsabilidad Única</th>
+                <th>Tiene Permitido Importar</th>
+                <th>Tiene PROHIBIDO Importar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Controller</strong></td>
+                <td>Recibir solicitud HTTP, autenticar cabeceras, validar sintaxis con DTO y devolver código de estado HTTP (200, 201, 400).</td>
+                <td><span class="tag-allowed">Service</span> <span class="tag-allowed">DTOs</span></td>
+                <td><span class="tag-forbidden">🚫 Repositories</span> <span class="tag-forbidden">🚫 Entidades JPA</span> <span class="tag-forbidden">🚫 Consultas SQL</span></td>
+              </tr>
+              <tr>
+                <td><strong>Service</strong></td>
+                <td>Orquestar casos de uso, aplicar cálculos de negocio, verificar unicidad de datos y controlar transacciones (<code>@Transactional</code>).</td>
+                <td><span class="tag-allowed">Repository</span> <span class="tag-allowed">Entities</span> <span class="tag-allowed">Mappers</span></td>
+                <td><span class="tag-forbidden">🚫 HttpServletRequest</span> <span class="tag-forbidden">🚫 Clases de UI</span> <span class="tag-forbidden">🚫 Generar JSON</span></td>
+              </tr>
+              <tr>
+                <td><strong>Repository</strong></td>
+                <td>Consultar, persistir, actualizar y eliminar registros en la base de datos a través de JDBC u ORM.</td>
+                <td><span class="tag-allowed">Entities</span> <span class="tag-allowed">Spring Data / ORM</span></td>
+                <td><span class="tag-forbidden">🚫 Reglas de negocio</span> <span class="tag-forbidden">🚫 DTOs de Controller</span> <span class="tag-forbidden">🚫 HTTP</span></td>
+              </tr>
+              <tr>
+                <td><strong>Entity</strong></td>
+                <td>Representar la estructura física de la tabla en base de datos (columnas, llaves foráneas, índices).</td>
+                <td><span class="tag-allowed">Jakarta Persistence</span></td>
+                <td><span class="tag-forbidden">🚫 Servicios</span> <span class="tag-forbidden">🚫 Repositorios</span> <span class="tag-forbidden">🚫 Controllers</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Subview 3: Flow -->
+        <div id="subview-layered-flow" class="subview-content">
+          <div class="path-steps-list">
+            <div class="path-step-item">
+              <div class="path-num">1</div>
+              <div class="path-content">
+                <strong>Petición entrante al Controller:</strong>
+                <span>El cliente envía <code>POST /users</code> con JSON. El Controller recibe y valida automáticamente el <code>CreateUserRequestDTO</code>. Si falta el email, aborta de inmediato con 400 Bad Request.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">2</div>
+              <div class="path-content">
+                <strong>Llamada al Service:</strong>
+                <span>El Controller llama a <code>userService.createUser(dto)</code>. El Controller nunca hace SQL ni sabe en qué base de datos se guarda.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">3</div>
+              <div class="path-content">
+                <strong>Ejecución en Service & Creación de Entity:</strong>
+                <span>El Service verifica que el email no esté repetido consultando <code>userRepository.existsByEmail()</code>. Hashea la contraseña y transforma los datos en un <code>UserEntity</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">4</div>
+              <div class="path-content">
+                <strong>Persistencia en Repository & BD:</strong>
+                <span>El Service ejecuta <code>userRepository.save(entity)</code>. El ORM genera el <code>INSERT INTO users ...</code> y la base de datos asigna el ID.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">5</div>
+              <div class="path-content">
+                <strong>Retorno Sanitizado:</strong>
+                <span>El Service toma la entidad persistida, la mapea a un <code>UserResponseDTO</code> (sin password) y se la entrega al Controller, quien responde con HTTP 201 Created.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subview 4: Senior Insights -->
+        <div id="subview-layered-senior" class="subview-content">
+          <div class="senior-callout">
+            <h4>💡 Visión de Arquitecto Senior: La Trampa de la "Arquitectura Dirigida por Base de Datos"</h4>
+            <p>
+              En la arquitectura en capas tradicional, la dirección de las dependencias fluye <strong>Controller ➔ Service ➔ Repository ➔ Base de Datos</strong>.
+              <br><br>
+              <strong>El Gran Defecto:</strong> Todo el sistema tiende a acoplarse al modelo de la base de datos. Si una columna cambia de nombre en SQL, la Entidad cambia, lo que obliga a cambiar el Service y potencialmente el Controller.
+              <br><br>
+              <strong>Regla de Oro Senior:</strong> Usa siempre DTOs independientes y Mappers. Nunca expongas la entidad de base de datos directamente en el Controller. Si tu negocio empieza a tener más de 20 reglas complejas, migra este monolito hacia Arquitectura Hexagonal antes de que los servicios se conviertan en "God Classes".
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           PANEL 2: ARQUITECTURA HEXAGONAL (PORTS & ADAPTERS)
+      ======================================================== -->
+      <div id="panel-hexagonal" class="arch-panel">
+        <h3 style="font-size:1.45rem; margin-bottom:0.4rem;">2. Arquitectura Hexagonal (Ports & Adapters - Cockburn)</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+          Diseñada para aislar radicalmente las reglas de negocio del mundo exterior. Tu aplicación se divide en un <strong>Núcleo de Dominio puro</strong> rodeado por <strong>Puertos (Interfaces)</strong> y <strong>Adaptadores</strong> intercambiables.
+        </p>
+
+        <!-- Subnav -->
+        <div class="arch-subnav">
+          <button class="subnav-btn active" onclick="switchSubView('hexagonal', 'folders', this)">📁 Árbol de Carpetas Real</button>
+          <button class="subnav-btn" onclick="switchSubView('hexagonal', 'rules', this)">🛡️ Reglas & Qué Puede Importar</button>
+          <button class="subnav-btn" onclick="switchSubView('hexagonal', 'flow', this)">🔄 Cómo Viajan los Datos Paso a Paso</button>
+          <button class="subnav-btn" onclick="switchSubView('hexagonal', 'senior', this)">🎓 Análisis Senior & DIP</button>
+        </div>
+
+        <!-- Subview 1: Folders -->
+        <div id="subview-hexagonal-folders" class="subview-content active">
+          <div class="file-tree">
+            <span class="tree-folder">src/main/java/com/jorge/hexagonal/</span><br>
+            ├── <span class="tree-folder">domain/</span> <span class="tree-comment">// 🏛️ NÚCLEO PURO (¡Cero dependencias de librerías!)</span><br>
+            │   ├── <span class="tree-folder">model/</span> <span class="tree-comment">// User.java, Email.java, Money.java</span><br>
+            │   └── <span class="tree-folder">exception/</span> <span class="tree-comment">// InsufficientBalanceException.java</span><br>
+            ├── <span class="tree-folder">application/</span> <span class="tree-comment">// Casos de Uso y Contratos</span><br>
+            │   ├── <span class="tree-folder">ports/</span><br>
+            │   │   ├── <span class="tree-folder">input/</span> <span class="tree-comment">// CreateUserUseCase.java (Interfaz hacia el mundo exterior)</span><br>
+            │   │   └── <span class="tree-folder">output/</span> <span class="tree-comment">// UserRepositoryPort.java, NotificationPort.java</span><br>
+            │   └── <span class="tree-folder">service/</span> <span class="tree-comment">// CreateUserService.java (Implementa CreateUserUseCase)</span><br>
+            └── <span class="tree-folder">infrastructure/</span> <span class="tree-comment">// Herramientas, BD, APIs y Frameworks</span><br>
+                └── <span class="tree-folder">adapters/</span><br>
+                    ├── <span class="tree-folder">input/</span> <span class="tree-comment">// Quienes inician acciones</span><br>
+                    │   ├── <span class="tree-folder">rest/</span> <span class="tree-comment">// UserRestController.java, UserRequestDto.java</span><br>
+                    │   └── <span class="tree-folder">messaging/</span> <span class="tree-comment">// RabbitMQOrderListener.java</span><br>
+                    └── <span class="tree-folder">output/</span> <span class="tree-comment">// Quienes ejecutan hacia afuera</span><br>
+                        ├── <span class="tree-folder">persistence/</span> <span class="tree-comment">// PostgresUserAdapter.java, UserJpaEntity.java</span><br>
+                        └── <span class="tree-folder">email/</span> <span class="tree-comment">// SendGridEmailAdapter.java</span>
+          </div>
+        </div>
+
+        <!-- Subview 2: Rules -->
+        <div id="subview-hexagonal-rules" class="subview-content">
+          <table class="layer-table">
+            <thead>
+              <tr>
+                <th>Estrato</th>
+                <th>Responsabilidad</th>
+                <th>Permitido Importar</th>
+                <th>TERMINANTEMENTE PROHIBIDO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Domain</strong></td>
+                <td>Modelar entidades puras, invariantes de negocio y reglas que existirían incluso si no existieran computadoras ni internet.</td>
+                <td><span class="tag-allowed">Java/TS Estándar</span></td>
+                <td><span class="tag-forbidden">🚫 Spring Boot</span> <span class="tag-forbidden">🚫 JPA/Hibernate</span> <span class="tag-forbidden">🚫 HTTP/Jackson</span></td>
+              </tr>
+              <tr>
+                <td><strong>Application (Ports & Services)</strong></td>
+                <td>Definir qué puede hacer el sistema (Puertos de Entrada) y qué herramientas externas necesita (Puertos de Salida).</td>
+                <td><span class="tag-allowed">Domain</span></td>
+                <td><span class="tag-forbidden">🚫 Postgres Driver</span> <span class="tag-forbidden">🚫 Controladores REST</span> <span class="tag-forbidden">🚫 SQL</span></td>
+              </tr>
+              <tr>
+                <td><strong>Infrastructure (Adapters)</strong></td>
+                <td>Traducir el mundo técnico exterior hacia los puertos de la aplicación y viceversa.</td>
+                <td><span class="tag-allowed">Application</span> <span class="tag-allowed">Domain</span> <span class="tag-allowed">Spring/JPA/Kafka</span></td>
+                <td><span class="tag-forbidden">🚫 Alterar reglas del dominio sin pasar por un caso de uso</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Subview 3: Flow -->
+        <div id="subview-hexagonal-flow" class="subview-content">
+          <div class="path-steps-list">
+            <div class="path-step-item">
+              <div class="path-num">1</div>
+              <div class="path-content">
+                <strong>Adaptador de Entrada (Driver Adapter):</strong>
+                <span>El cliente hace HTTP POST. El <code>UserRestController</code> (Adaptador Primario) recibe la llamada, valida y traduce el JSON a un objeto del Dominio.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">2</div>
+              <div class="path-content">
+                <strong>Cruza el Puerto de Entrada (Inbound Port):</strong>
+                <span>El controlador invoca la interfaz <code>CreateUserUseCase.execute(user)</code> sin saber qué clase concreta lo ejecutará.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">3</div>
+              <div class="path-content">
+                <strong>Servicio de Aplicación en el Núcleo:</strong>
+                <span><code>CreateUserService</code> procesa la lógica de negocio pura. Cuando necesita persistir los datos, no llama a una base de datos directamente, sino al <strong>Puerto de Salida</strong> <code>UserRepositoryPort.save(user)</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">4</div>
+              <div class="path-content">
+                <strong>Adaptador de Salida (Driven Adapter) en Infraestructura:</strong>
+                <span>La clase <code>PostgresUserAdapter</code> implementa el <code>UserRepositoryPort</code>. Toma el modelo puro <code>User</code>, lo mapea a <code>UserJpaEntity</code> y ejecuta el SQL en PostgreSQL.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">5</div>
+              <div class="path-content">
+                <strong>Retorno de Datos Desacoplado:</strong>
+                <span>La BD confirma la inserción, el adaptador devuelve el <code>User</code> de dominio al caso de uso, y el caso de uso devuelve al controlador, quien responde en formato JSON.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subview 4: Senior Insights -->
+        <div id="subview-hexagonal-senior" class="subview-content">
+          <div class="senior-callout">
+            <h4>💡 Visión de Arquitecto Senior: La Magia de la Inversión de Dependencias (DIP)</h4>
+            <p>
+              ¿Por qué Hexagonal es tan potente? Observa el truco arquitectónico:
+              <br><br>
+              <strong>Flujo de Control (En tiempo de ejecución):</strong> El código corre de izquierda a derecha: <code>Controller ➔ Caso de Uso ➔ Adaptador de BD</code>.
+              <br>
+              <strong>Flujo de Dependencias (En tiempo de compilación):</strong> ¡Va hacia adentro! La base de datos DEPENDE del Puerto declarado por la Aplicación. El núcleo del negocio no tiene idea de qué motor de base de datos se utiliza.
+              <br><br>
+              <strong>Beneficio Senior Inmediato:</strong> Para escribir pruebas unitarias de tus casos de uso, no necesitas bases de datos en memoria (H2) ni contenedores Docker. Simplemente creas un <code>MockUserRepository</code> en memoria y los tests corren en 5 milisegundos.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           PANEL 3: CLEAN ARCHITECTURE (ONION)
+      ======================================================== -->
+      <div id="panel-clean" class="arch-panel">
+        <h3 style="font-size:1.45rem; margin-bottom:0.4rem;">3. Clean Architecture (Onion / Robert C. Martin)</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+          Se basa en la <strong>Regla de Dependencia Concéntrica</strong>: Las capas internas NUNCA pueden saber nada de las capas externas. Los frameworks, la web y las bases de datos son meros detalles secundarios reemplazables.
+        </p>
+
+        <!-- Subnav -->
+        <div class="arch-subnav">
+          <button class="subnav-btn active" onclick="switchSubView('clean', 'folders', this)">📁 Árbol de Carpetas Real</button>
+          <button class="subnav-btn" onclick="switchSubView('clean', 'rules', this)">🛡️ Reglas Concéntricas</button>
+          <button class="subnav-btn" onclick="switchSubView('clean', 'flow', this)">🔄 Viaje con Input/Output Boundaries</button>
+          <button class="subnav-btn" onclick="switchSubView('clean', 'senior', this)">🎓 Análisis Senior & Sobreingeniería</button>
+        </div>
+
+        <!-- Subview 1: Folders -->
+        <div id="subview-clean-folders" class="subview-content active">
+          <div class="file-tree">
+            <span class="tree-folder">src/main/java/com/jorge/clean/</span><br>
+            ├── <span class="tree-folder">domain/</span> <span class="tree-comment">// Círculo 1: Entidades Empresariales Puras</span><br>
+            │   ├── <span class="tree-file">User.java</span> <span class="tree-comment">// Reglas críticas del negocio independiente de la app</span><br>
+            │   └── <span class="tree-file">Money.java</span><br>
+            ├── <span class="tree-folder">usecase/</span> <span class="tree-comment">// Círculo 2: Reglas de Aplicación</span><br>
+            │   ├── <span class="tree-file">RegisterUserInputBoundary.java</span> <span class="tree-comment">// Interfaz de Entrada</span><br>
+            │   ├── <span class="tree-file">RegisterUserOutputBoundary.java</span> <span class="tree-comment">// Interfaz de Salida (Presenter)</span><br>
+            │   ├── <span class="tree-file">RegisterUserInteractor.java</span> <span class="tree-comment">// El Caso de Uso orquestador</span><br>
+            │   └── <span class="tree-file">RegisterUserRequestModel.java</span> <span class="tree-comment">// Datos puros para el caso de uso</span><br>
+            ├── <span class="tree-folder">adapter/</span> <span class="tree-comment">// Círculo 3: Adaptadores de Interfaces</span><br>
+            │   ├── <span class="tree-folder">controller/</span> <span class="tree-comment">// UserController.java</span><br>
+            │   ├── <span class="tree-folder">presenter/</span> <span class="tree-comment">// UserWebPresenter.java (Prepara ViewModel)</span><br>
+            │   └── <span class="tree-folder">gateway/</span> <span class="tree-comment">// UserDataGateway.java (Interfaz para persistencia)</span><br>
+            └── <span class="tree-folder">framework/</span> <span class="tree-comment">// Círculo 4: Frameworks & Drivers</span><br>
+                ├── <span class="tree-folder">web/</span> <span class="tree-comment">// Configuración de Servidor, Spring Security</span><br>
+                └── <span class="tree-folder">database/</span> <span class="tree-comment">// JPA Repositories, Migraciones Flyway</span>
+          </div>
+        </div>
+
+        <!-- Subview 2: Rules -->
+        <div id="subview-clean-rules" class="subview-content">
+          <table class="layer-table">
+            <thead>
+              <tr>
+                <th>Círculo Concéntrico</th>
+                <th>Componente</th>
+                <th>Hacia dónde apuntan sus dependencias</th>
+                <th>Regla Fundamental</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Centro (1)</strong></td>
+                <td>Enterprise Entities</td>
+                <td><span class="tag-allowed">Hacia nadie</span></td>
+                <td>Si la empresa cambia de web a una app de escritorio, las entidades no sufren ninguna modificación.</td>
+              </tr>
+              <tr>
+                <td><strong>Medio (2)</strong></td>
+                <td>Application Use Cases</td>
+                <td><span class="tag-allowed">Hacia el Centro (Entities)</span></td>
+                <td>Orquesta los flujos de datos hacia y desde las entidades. Solo usa Request/Response Models.</td>
+              </tr>
+              <tr>
+                <td><strong>Intermedio (3)</strong></td>
+                <td>Interface Adapters</td>
+                <td><span class="tag-allowed">Hacia los Use Cases y Entities</span></td>
+                <td>Convierte datos del formato conveniente para los casos de uso al formato conveniente para la web/BD.</td>
+              </tr>
+              <tr>
+                <td><strong>Exterior (4)</strong></td>
+                <td>Frameworks & Drivers</td>
+                <td><span class="tag-allowed">Hacia los Adapters</span></td>
+                <td>Aquí viven las bibliotecas de terceros, Postgres, AWS SDK, Spring. Es la capa más volátil.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Subview 3: Flow -->
+        <div id="subview-clean-flow" class="subview-content">
+          <div class="path-steps-list">
+            <div class="path-step-item">
+              <div class="path-num">1</div>
+              <div class="path-content">
+                <strong>Controller empaqueta el RequestModel:</strong>
+                <span>El <code>UserController</code> recibe la petición web, la transforma en <code>RegisterUserRequestModel</code> e invoca a <code>RegisterUserInputBoundary.execute(requestModel)</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">2</div>
+              <div class="path-content">
+                <strong>El Interactor aplica el Caso de Uso:</strong>
+                <span><code>RegisterUserInteractor</code> toma los datos, instancia la <code>Entity User</code> pura y ejecuta los métodos de negocio.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">3</div>
+              <div class="path-content">
+                <strong>Persistencia vía Gateway:</strong>
+                <span>El interactor invoca la interfaz <code>UserDataGateway.save(user)</code>. La implementación en el círculo externo persiste en base de datos.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">4</div>
+              <div class="path-content">
+                <strong>El Salto al Presenter (Output Boundary):</strong>
+                <span>En lugar de que el caso de uso le devuelva un valor directo al Controller, el interactor llama a <code>RegisterUserOutputBoundary.present(responseModel)</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">5</div>
+              <div class="path-content">
+                <strong>Generación del ViewModel:</strong>
+                <span>El <code>UserWebPresenter</code> recibe el <code>ResponseModel</code>, formatea fechas o monedas para la vista web y entrega el <code>UserViewModel</code> al cliente.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subview 4: Senior Insights -->
+        <div id="subview-clean-senior" class="subview-content">
+          <div class="senior-callout">
+            <h4>💡 Visión de Arquitecto Senior: ¿Cuándo Clean Architecture se vuelve Sobreingeniería?</h4>
+            <p>
+              Clean Architecture es una de las arquitecturas más robustas jamás concebidas, pero tiene un precio: <strong>muchas clases intermedias</strong> (RequestModel, ResponseModel, InputBoundary, OutputBoundary, Interactor, Presenter, ViewModel).
+              <br><br>
+              <strong>Advertencia Senior:</strong> Si tu aplicación es un CRUD simple con poca lógica de negocio, implementar Clean Architecture completa te generará hasta 8 archivos por cada endpoint trivial. Aplícala cuando las reglas de negocio sean complejas, cambien con frecuencia o cuando tengas múltiples interfaces (Web, CLI, Móvil, Batch) consumiendo el mismo núcleo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           PANEL 4: MICROSERVICIOS DISTRIBUIDOS
+      ======================================================== -->
+      <div id="panel-microservices" class="arch-panel">
+        <h3 style="font-size:1.45rem; margin-bottom:0.4rem;">4. Arquitectura de Microservicios Distribuidos</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+          Descompone un sistema grande en <strong>múltiples servicios pequeños e independientes</strong> divididos por dominios de negocio (Bounded Contexts), donde cada servicio es dueño exclusivo de su propia base de datos.
+        </p>
+
+        <!-- Subnav -->
+        <div class="arch-subnav">
+          <button class="subnav-btn active" onclick="switchSubView('microservices', 'folders', this)">📁 Topología & Estructura de Servicios</button>
+          <button class="subnav-btn" onclick="switchSubView('microservices', 'rules', this)">🛡️ Reglas Sagradas de Microservicios</button>
+          <button class="subnav-btn" onclick="switchSubView('microservices', 'flow', this)">🔄 Flujo Entre Servicios (SAGA & Eventos)</button>
+          <button class="subnav-btn" onclick="switchSubView('microservices', 'senior', this)">🎓 Trampa del Monolito Distribuido</button>
+        </div>
+
+        <!-- Subview 1: Folders -->
+        <div id="subview-microservices-folders" class="subview-content active">
+          <div class="file-tree">
+            <span class="tree-folder">enterprise-ecosystem/</span><br>
+            ├── <span class="tree-folder">api-gateway/</span> <span class="tree-comment">// Enrutamiento, SSL, Rate Limit, Auth JWT</span><br>
+            ├── <span class="tree-folder">auth-service/</span> <span class="tree-comment">// Servicio de Identidad & OAuth2 (PostgreSQL propia)</span><br>
+            ├── <span class="tree-folder">order-service/</span> <span class="tree-comment">// Gestión de Pedidos (MongoDB propia)</span><br>
+            │   ├── <span class="tree-folder">src/main/java/com/jorge/orders/</span><br>
+            │   │   ├── <span class="tree-folder">controller/</span> <span class="tree-comment">// POST /orders</span><br>
+            │   │   ├── <span class="tree-folder">client/</span> <span class="tree-comment">// PaymentFeignClient.java (Llamada HTTP síncrona con Circuit Breaker)</span><br>
+            │   │   └── <span class="tree-folder">event/</span> <span class="tree-comment">// OrderCreatedEventPublisher.java (Kafka)</span><br>
+            │   └── <span class="tree-file">Dockerfile</span><br>
+            ├── <span class="tree-folder">payment-service/</span> <span class="tree-comment">// Pagos y pasarelas bancarias (MySQL propia)</span><br>
+            ├── <span class="tree-folder">notification-service/</span> <span class="tree-comment">// Consumidor asíncrono de eventos (Push, Email)</span><br>
+            └── <span class="tree-folder">k8s/</span> <span class="tree-comment">// Manifiestos Kubernetes, Helm charts e Istio Service Mesh</span>
+          </div>
+        </div>
+
+        <!-- Subview 2: Rules -->
+        <div id="subview-microservices-rules" class="subview-content">
+          <table class="layer-table">
+            <thead>
+              <tr>
+                <th>Principio</th>
+                <th>Significado Práctico</th>
+                <th>Beneficio</th>
+                <th>Consecuencia si se Rompe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Database per Service</strong></td>
+                <td>Ningún servicio puede hacer <code>SELECT</code> ni <code>JOIN</code> directo a la base de datos de otro servicio.</td>
+                <td>Despliegues y cambios de esquema sin coordinar con otros equipos.</td>
+                <td><span class="tag-forbidden">Acoplamiento letal en BD</span></td>
+              </tr>
+              <tr>
+                <td><strong>API Contract First</strong></td>
+                <td>La comunicación entre servicios se rige por contratos estrictos (OpenAPI o Protobuf gRPC).</td>
+                <td>Compatibilidad hacia atrás con versionado (v1, v2).</td>
+                <td><span class="tag-forbidden">Roturas masivas en producción</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fallas Aisladas</strong></td>
+                <td>Si el servicio de Notificaciones colapsa, los usuarios aún deben poder comprar órdenes.</td>
+                <td>Resiliencia mediante Circuit Breakers (Resilience4j).</td>
+                <td><span class="tag-forbidden">Caída en cascada de todo el ecosistema</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Subview 3: Flow -->
+        <div id="subview-microservices-flow" class="subview-content">
+          <div class="path-steps-list">
+            <div class="path-step-item">
+              <div class="path-num">1</div>
+              <div class="path-content">
+                <strong>API Gateway Intercepta:</strong>
+                <span>El usuario llama a <code>POST /orders</code>. El Gateway valida el token JWT, aplica rate-limiting y redirige la petición al clúster de <code>order-service</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">2</div>
+              <div class="path-content">
+                <strong>Transacción Local en Order Service:</strong>
+                <span><code>order-service</code> crea la orden con estado <code>PENDING</code> y la guarda en su propia base de datos (Transacción ACID local de 15ms).</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">3</div>
+              <div class="path-content">
+                <strong>Publicación de Evento (Patrón SAGA):</strong>
+                <span>El servicio de pedidos emite el evento <code>OrderCreatedEvent { orderId: 105, total: $80 }</code> hacia el broker Apache Kafka.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">4</div>
+              <div class="path-content">
+                <strong>Consumo Asíncrono en Payment Service:</strong>
+                <span><code>payment-service</code> lee el evento, procesa el cargo con Stripe o PayPal y publica un nuevo evento: <code>PaymentCapturedEvent</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">5</div>
+              <div class="path-content">
+                <strong>Consistencia Eventual Completada:</strong>
+                <span><code>order-service</code> escucha <code>PaymentCapturedEvent</code> y actualiza el estado de la orden a <code>CONFIRMED</code>. Paralelamente, <code>notification-service</code> envía el email de confirmación.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subview 4: Senior Insights -->
+        <div id="subview-microservices-senior" class="subview-content">
+          <div class="senior-callout">
+            <h4>💡 Visión de Arquitecto Senior: La Trampa del "Monolito Distribuido"</h4>
+            <p>
+              Muchos equipos saltan a microservicios creyendo que solucionará sus problemas de organización, y terminan creando lo peor de ambos mundos:
+              <br><br>
+              <strong>El Monolito Distribuido ocurre cuando:</strong> Tus microservicios se llaman síncronamente por HTTP en cascada (A llama a B, B llama a C, C llama a D). Si C se cae o tarda 2 segundos, A colapsa. Además, comparten la misma base de datos relacional.
+              <br><br>
+              <strong>Recomendación Senior Innegociable:</strong> Comienza siempre con un <strong>Monolito Modular</strong> bien diseñado. Divide primero por módulos con interfaces limpias en un solo repositorio. Solo divide en microservicios cuando un módulo específico requiera escalar de forma extrema o cuando tengas más de 25 ingenieros divididos en squads autónomos.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           PANEL 5: EVENT-DRIVEN ARCHITECTURE (EDA)
+      ======================================================== -->
+      <div id="panel-eda" class="arch-panel">
+        <h3 style="font-size:1.45rem; margin-bottom:0.4rem;">5. Arquitectura Dirigida por Eventos (EDA)</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+          En lugar del paradigma clásico donde un cliente espera bloqueado a que el servidor termine todo, en EDA los sistemas reaccionan a <strong>hechos consumados en el pasado (Eventos)</strong> de forma totalmente asíncrona.
+        </p>
+
+        <!-- Subnav -->
+        <div class="arch-subnav">
+          <button class="subnav-btn active" onclick="switchSubView('eda', 'folders', this)">📁 Anatomía de un Evento & Estructura</button>
+          <button class="subnav-btn" onclick="switchSubView('eda', 'rules', this)">🛡️ Reglas de Producción & Consumo</button>
+          <button class="subnav-btn" onclick="switchSubView('eda', 'flow', this)">🔄 Ciclo de Vida del Mensaje & DLQ</button>
+          <button class="subnav-btn" onclick="switchSubView('eda', 'senior', this)">🎓 Idempotencia & Patrón Outbox</button>
+        </div>
+
+        <!-- Subview 1: Folders -->
+        <div id="subview-eda-folders" class="subview-content active">
+          <div class="file-tree">
+            <span class="tree-folder">src/main/java/com/jorge/eda/</span><br>
+            ├── <span class="tree-folder">producer/</span> <span class="tree-comment">// Emisor de Eventos</span><br>
+            │   ├── <span class="tree-file">UserRegisteredEventPublisher.java</span> <span class="tree-comment">// Envía al Broker (Kafka/RabbitMQ)</span><br>
+            │   └── <span class="tree-file">OutboxRelayScheduler.java</span> <span class="tree-comment">// Garantía de entrega transaccional</span><br>
+            ├── <span class="tree-folder">consumer/</span> <span class="tree-comment">// Suscriptores en Paralelo</span><br>
+            │   ├── <span class="tree-file">WelcomeEmailConsumer.java</span> <span class="tree-comment">// Escucha "user.registered" ➔ envía correo</span><br>
+            │   ├── <span class="tree-file">AnalyticsTrackingConsumer.java</span> <span class="tree-comment">// Registra en Data Lake</span><br>
+            │   └── <span class="tree-file">AuditSecurityConsumer.java</span> <span class="tree-comment">// Auditoría de cumplimiento</span><br>
+            └── <span class="tree-folder">schema/</span> <span class="tree-comment">// Contrato del Evento (Avro / JSON Schema)</span><br>
+                └── <span class="tree-file">UserRegisteredEvent.java</span> <span class="tree-comment">// Contiene eventId, timestamp, correlationId</span>
+          </div>
+        </div>
+
+        <!-- Subview 2: Rules -->
+        <div id="subview-eda-rules" class="subview-content">
+          <table class="layer-table">
+            <thead>
+              <tr>
+                <th>Elemento</th>
+                <th>Regla de Diseño</th>
+                <th>Por qué es Vital</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Inmutabilidad del Evento</strong></td>
+                <td>Un evento es un hecho que YA OCURRIÓ (en tiempo pasado: <code>OrderCreated</code>, no <code>CreateOrder</code>). Jamás puede modificarse.</td>
+                <td>Permite tener una pista de auditoría perfecta y reejecutar eventos si es necesario.</td>
+              </tr>
+              <tr>
+                <td><strong>Desacoplamiento del Productor</strong></td>
+                <td>El productor publica al broker y se desentiende. No sabe cuántos consumidores existen ni si están despiertos.</td>
+                <td>Si el servicio de analítica está caído, el checkout de compras sigue funcionando al 100%.</td>
+              </tr>
+              <tr>
+                <td><strong>Esquema Estricto</strong></td>
+                <td>Los campos del evento deben tener compatibilidad hacia atrás mediante un Schema Registry.</td>
+                <td>Evita que un productor nuevo rompa a los consumidores antiguos que están en producción.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Subview 3: Flow -->
+        <div id="subview-eda-flow" class="subview-content">
+          <div class="path-steps-list">
+            <div class="path-step-item">
+              <div class="path-num">1</div>
+              <div class="path-content">
+                <strong>Ocurrencia y Publicación:</strong>
+                <span>El usuario Jorge se registra. El backend persiste al usuario en DB y publica de inmediato el paquete <code>UserRegisteredEvent</code> con un <code>eventId</code> único al tópico de Kafka <code>users.events</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">2</div>
+              <div class="path-content">
+                <strong>Distribución en el Broker:</strong>
+                <span>Kafka almacena el evento en su log inmutable y asigna un offset secuencial persistido en disco replicado en 3 nodos.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">3</div>
+              <div class="path-content">
+                <strong>Procesamiento en Paralelo:</strong>
+                <span>Tres servicios totalmente independientes leen el mismo evento en simultáneo: EmailService prepara el saludo, AnalyticsService calcula métricas y FraudService revisa la IP.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">4</div>
+              <div class="path-content">
+                <strong>Manejo de Errores con Dead Letter Queue (DLQ):</strong>
+                <span>Si el servicio de email falla tras 3 reintentos automáticos, el mensaje no se pierde; se envía al tópico <code>users.events.DLQ</code> para ser inspeccionado por soporte.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subview 4: Senior Insights -->
+        <div id="subview-eda-senior" class="subview-content">
+          <div class="senior-callout">
+            <h4>💡 Visión de Arquitecto Senior: Idempotencia y el Patrón Transactional Outbox</h4>
+            <p>
+              En sistemas basados en eventos, la red NO es perfecta. Los brokers garantizan entrega <em>"At-least-once"</em> (al menos una vez), lo que significa que <strong>un evento puede llegar duplicado</strong>.
+              <br><br>
+              <strong>Regla Senior 1 (Idempotencia Obligatoria):</strong> Tus consumidores SIEMPRE deben ser idempotentes. Antes de procesar, verifica en Redis o en tu BD si el <code>eventId</code> ya fue procesado: <code>if (processedEvents.contains(event.id)) return;</code>.
+              <br><br>
+              <strong>Regla Senior 2 (Transactional Outbox):</strong> Nunca hagas un <code>userRepository.save(user)</code> y en la línea siguiente <code>kafkaTemplate.send(event)</code>. Si la base de datos comitea pero la red hacia Kafka se cae, el evento nunca se publicará. El Patrón Outbox guarda el evento en una tabla <code>outbox_events</code> dentro de la misma transacción ACID de la BD y un proceso en segundo plano lo envía a Kafka de forma 100% infalible.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           PANEL 6: CQRS & EVENT SOURCING
+      ======================================================== -->
+      <div id="panel-cqrs" class="arch-panel">
+        <h3 style="font-size:1.45rem; margin-bottom:0.4rem;">6. CQRS (Command Query Responsibility Segregation)</h3>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+          Separa radicalmente el camino de <strong>escritura de datos (Commands)</strong> del camino de <strong>lectura de datos (Queries)</strong>, permitiendo optimizar cada modelo de forma 100% independiente.
+        </p>
+
+        <!-- Subnav -->
+        <div class="arch-subnav">
+          <button class="subnav-btn active" onclick="switchSubView('cqrs', 'folders', this)">📁 Árbol de Carpetas (Dos Caminos)</button>
+          <button class="subnav-btn" onclick="switchSubView('cqrs', 'rules', this)">🛡️ Reglas de Commands vs Queries</button>
+          <button class="subnav-btn" onclick="switchSubView('cqrs', 'flow', this)">🔄 Flujo Bifurcado & Proyecciones</button>
+          <button class="subnav-btn" onclick="switchSubView('cqrs', 'senior', this)">🎓 Análisis Senior & Event Sourcing</button>
+        </div>
+
+        <!-- Subview 1: Folders -->
+        <div id="subview-cqrs-folders" class="subview-content active">
+          <div class="file-tree">
+            <span class="tree-folder">src/main/java/com/jorge/cqrs/</span><br>
+            ├── <span class="tree-folder">command/</span> <span class="tree-comment">// ✍️ CAMINO DE ESCRITURA (Mutaciones / Estado)</span><br>
+            │   ├── <span class="tree-file">CreateOrderCommand.java</span> <span class="tree-comment">// Intención de modificar estado</span><br>
+            │   ├── <span class="tree-file">CreateOrderCommandHandler.java</span> <span class="tree-comment">// Valida reglas pesadas de negocio</span><br>
+            │   └── <span class="tree-file">OrderWriteRepository.java</span> <span class="tree-comment">// Escribe en BD Relacional normalizada</span><br>
+            ├── <span class="tree-folder">query/</span> <span class="tree-comment">// 📖 CAMINO DE LECTURA (Cero lógica de negocio, ultra rápido)</span><br>
+            │   ├── <span class="tree-file">GetOrderSummaryQuery.java</span> <span class="tree-comment">// Parámetros de búsqueda</span><br>
+            │   ├── <span class="tree-file">GetOrderSummaryQueryHandler.java</span> <span class="tree-comment">// Consulta directa a lectura</span><br>
+            │   ├── <span class="tree-file">OrderReadModelDTO.java</span> <span class="tree-comment">// DTO plano desnormalizado</span><br>
+            │   └── <span class="tree-file">OrderReadRepository.java</span> <span class="tree-comment">// Lee de Elasticsearch o MongoDB</span><br>
+            └── <span class="tree-folder">projection/</span> <span class="tree-comment">// 🔄 Sincronizador de Escritura ➔ Lectura</span><br>
+                └── <span class="tree-file">OrderProjectionHandler.java</span> <span class="tree-comment">// Actualiza el modelo de lectura tras cada evento</span>
+          </div>
+        </div>
+
+        <!-- Subview 2: Rules -->
+        <div id="subview-cqrs-rules" class="subview-content">
+          <table class="layer-table">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th>Commands (Escritura)</th>
+                <th>Queries (Lectura)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Intención</strong></td>
+                <td>Modificar estado (Crear, Editar, Pagar, Cancelar).</td>
+                <td>Consultar información sin alterar absolutamente nada.</td>
+              </tr>
+              <tr>
+                <td><strong>Retorno de Datos</strong></td>
+                <td>Retorna éxito/fracaso o el ID generado. <strong>No debe retornar datos complejos</strong>.</td>
+                <td>Retorna un DTO optimizado listo para que el frontend lo dibuje en pantalla.</td>
+              </tr>
+              <tr>
+                <td><strong>Base de Datos Ideal</strong></td>
+                <td>BD Relacional Normalizada (Postgres) para evitar redundancias y asegurar integridad.</td>
+                <td>BD Desnormalizada o Cache (Elasticsearch, Read Replicas, Redis, Mongo).</td>
+              </tr>
+              <tr>
+                <td><strong>Carga Típica</strong></td>
+                <td>Baja/Media (ej: 5% del tráfico total).</td>
+                <td>Muy Alta (ej: 95% del tráfico total: búsquedas, catálogos).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Subview 3: Flow -->
+        <div id="subview-cqrs-flow" class="subview-content">
+          <div class="path-steps-list">
+            <div class="path-step-item">
+              <div class="path-num">1</div>
+              <div class="path-content">
+                <strong>Flujo de Escritura (Command):</strong>
+                <span>El usuario crea una orden. Se envía un <code>CreateOrderCommand</code>. El <code>CommandHandler</code> valida stock y dinero, genera la transacción de escritura en PostgreSQL y emite <code>OrderCreatedEvent</code>.</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">2</div>
+              <div class="path-content">
+                <strong>Proyección Asíncrona:</strong>
+                <span>Un <code>ProjectionHandler</code> escucha el evento y precalcula una vista desnormalizada en una base de datos optimizada para lectura (ej. MongoDB o vista SQL con todos los datos ya unidos, sin necesidad de hacer 6 <code>JOIN</code>s).</span>
+              </div>
+            </div>
+            <div class="path-step-item">
+              <div class="path-num">3</div>
+              <div class="path-content">
+                <strong>Flujo de Lectura (Query):</strong>
+                <span>Cuando un cliente o panel de administración consulta el resumen de la orden, llama al <code>QueryHandler</code>, el cual hace un simple <code>SELECT</code> directo a la vista precalculada en 3 milisegundos sin tocar el modelo de dominio ni la base de datos de escritura.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subview 4: Senior Insights -->
+        <div id="subview-cqrs-senior" class="subview-content">
+          <div class="senior-callout">
+            <h4>💡 Visión de Arquitecto Senior: El Gran Poder y el Riesgo de la Consistencia Eventual</h4>
+            <p>
+              En la mayoría de los sistemas, los usuarios consultan datos 100 veces más de lo que escriben. CQRS resuelve esto de raíz porque puedes tener 1 nodo de escritura y 15 réplicas de lectura rápida.
+              <br><br>
+              <strong>El Desafío Senior:</strong> Entre que el Command escribe en PostgreSQL y la proyección actualiza la base de datos de lectura, pasan unos 50 a 300 milisegundos. Si el usuario recarga la página inmediatamente, podría no ver su orden de inmediato. Esto se maneja con <em>Optimistic UI</em> en el frontend o notificando vía WebSockets cuando la proyección esté lista.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 4: SIMULADOR INTERACTIVO DE FLUJO DE DATOS -->
+  <section id="simulador-flujo" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Laboratorio en Tiempo Real</span>
+        <h2 class="section-title">4. ¿Cómo Viajan los Datos Entre Capas?</h2>
+        <p class="section-subtitle">
+          Observa paso a paso cómo se transforma una petición HTTP, qué validaciones se ejecutan y por qué usamos <strong>DTOs, Mappers, Casos de Uso y Entidades</strong> para proteger el sistema.
+        </p>
+      </div>
+
+      <div class="simulator-container">
+        <!-- Controls -->
+        <div class="sim-controls">
+          <div class="sim-scenario-selector">
+            <label for="scenarioSelect" style="font-weight:700; font-size:0.9rem;">Escenario:</label>
+            <select id="scenarioSelect" class="sim-select" onchange="changeScenario(this.value)">
+              <option value="success">✅ Flujo Exitoso: Registro de Usuario (POST /users)</option>
+              <option value="validation_error">❌ Error en Capa 2: DTO Inválido (Email incorrecto - 400 Bad Request)</option>
+              <option value="business_error">❌ Error en Capa 3: Regla de Negocio (Email ya existe - 409 Conflict)</option>
+              <option value="db_error">❌ Error en Capa 4/5: Fallo de Conexión en BD (500 Protegido)</option>
+            </select>
+          </div>
+
+          <div class="sim-buttons">
+            <button id="simPrevBtn" class="sim-btn" onclick="prevStep()" disabled>
+              ◀ Anterior
+            </button>
+            <button id="simPlayBtn" class="sim-btn primary" onclick="togglePlay()">
+              ▶ Reproducir Automático
+            </button>
+            <button id="simNextBtn" class="sim-btn" onclick="nextStep()">
+              Siguiente ▶
+            </button>
+            <button class="sim-btn" onclick="resetSim()" title="Reiniciar">
+              ↺ Reiniciar
+            </button>
+          </div>
+        </div>
+
+        <!-- Pipeline Nodes -->
+        <div class="pipeline">
+          <div id="step-0" class="pipeline-step active" onclick="goToStep(0)">
+            <span class="step-number">1</span>
+            <div class="step-name">Cliente HTTP</div>
+            <div class="step-role">Frontend / Postman</div>
+            <div id="packet-0" class="data-packet">JSON Raw</div>
+          </div>
+
+          <div id="step-1" class="pipeline-step" onclick="goToStep(1)">
+            <span class="step-number">2</span>
+            <div class="step-name">Controller & DTO</div>
+            <div class="step-role">Presentation Layer</div>
+          </div>
+
+          <div id="step-2" class="pipeline-step" onclick="goToStep(2)">
+            <span class="step-number">3</span>
+            <div class="step-name">Mapper & UseCase</div>
+            <div class="step-role">Application Layer</div>
+          </div>
+
+          <div id="step-3" class="pipeline-step" onclick="goToStep(3)">
+            <span class="step-number">4</span>
+            <div class="step-name">Domain Service</div>
+            <div class="step-role">Business Logic</div>
+          </div>
+
+          <div id="step-4" class="pipeline-step" onclick="goToStep(4)">
+            <span class="step-number">5</span>
+            <div class="step-name">Repository / ORM</div>
+            <div class="step-role">Persistence Layer</div>
+          </div>
+
+          <div id="step-5" class="pipeline-step" onclick="goToStep(5)">
+            <span class="step-number">6</span>
+            <div class="step-name">Base de Datos</div>
+            <div class="step-role">Storage / Engine</div>
+          </div>
+        </div>
+
+        <!-- Inspector View -->
+        <div class="sim-inspector">
+          <div class="inspector-content">
+            <h4 id="inspectorTitle">Paso 1: Solicitud HTTP del Cliente</h4>
+            <p id="inspectorDesc" class="inspector-desc">
+              El cliente emite una petición HTTP vía red. En este punto los datos viajan como una cadena de texto en bytes formateada en JSON.
+            </p>
+
+            <ul id="inspectorPoints" class="inspector-points"></ul>
+
+            <div style="margin-top:1.25rem; background:rgba(59, 130, 246, 0.08); border-left:3px solid var(--accent-blue); padding:10px 14px; border-radius:0 8px 8px 0;">
+              <strong style="color:var(--accent-blue); font-size:0.85rem; display:block; margin-bottom:2px;">Regla Arquitectónica en este punto:</strong>
+              <span id="inspectorRule" style="font-size:0.85rem; color:var(--text-secondary);">
+                El cliente solo respeta el contrato OpenAPI/JSON; desconoce totalmente qué lenguaje o base de datos existe detrás.
+              </span>
+            </div>
+          </div>
+
+          <!-- Code Box -->
+          <div class="code-box">
+            <div class="code-header">
+              <span id="codeLang">PAYLOAD HTTP EN RED</span>
+              <span id="codeFile">POST /api/v1/users</span>
+            </div>
+            <div id="codeDisplay" class="code-body"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: RECOMENDADOR ARQUITECTÓNICO -->
+  <section id="decision" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Asesor Inteligente</span>
+        <h2 class="section-title">5. ¿Qué Arquitectura Deberías Elegir?</h2>
+        <p class="section-subtitle">
+          Responde a estas 3 preguntas fundamentales de tu proyecto para recibir una recomendación arquitectónica justificada y adaptada a tu realidad técnica:
+        </p>
+      </div>
+
+      <div class="decision-tool">
+        <div class="decision-question">
+          <label>1. ¿Cuántos desarrolladores trabajarán simultáneamente en el backend?</label>
+          <div class="decision-options" id="opt-team">
+            <div class="option-card selected" onclick="selectDecision('team', 'small', this)">
+              <span>👤 1 a 4 devs</span>
+            </div>
+            <div class="option-card" onclick="selectDecision('team', 'medium', this)">
+              <span>👥 5 a 15 devs</span>
+            </div>
+            <div class="option-card" onclick="selectDecision('team', 'large', this)">
+              <span>🏢 20+ devs (múltiples squads)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="decision-question">
+          <label>2. ¿Cómo describirías la complejidad de tus reglas de negocio?</label>
+          <div class="decision-options" id="opt-complexity">
+            <div class="option-card selected" onclick="selectDecision('complexity', 'crud', this)">
+              <span>📄 Mayormente CRUD (Crear, Leer, Editar tablas)</span>
+            </div>
+            <div class="option-card" onclick="selectDecision('complexity', 'medium', this)">
+              <span>⚙️ Reglas medias (cálculos, flujos de estados, integraciones)</span>
+            </div>
+            <div class="option-card" onclick="selectDecision('complexity', 'high', this)">
+              <span>🧠 Muy compleja (banca, seguros, cotizaciones en vivo)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="decision-question">
+          <label>3. ¿Cuál es el requisito de tráfico y despliegue?</label>
+          <div class="decision-options" id="opt-scale">
+            <div class="option-card selected" onclick="selectDecision('scale', 'standard', this)">
+              <span>🚀 Tráfico normal / Un solo despliegue conjunto</span>
+            </div>
+            <div class="option-card" onclick="selectDecision('scale', 'independent', this)">
+              <span>🌐 Módulos críticos deben desplegarse independientemente</span>
+            </div>
+            <div class="option-card" onclick="selectDecision('scale', 'events', this)">
+              <span>⚡ Millones de eventos por segundo en tiempo real</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="calculateRecommendation()" style="margin-top:1rem;">
+          Calcular Recomendación Arquitectónica
+        </button>
+
+        <div id="recommendationBox" class="recommendation-box">
+          <h3 id="recTitle" style="color:var(--accent-cyan); font-size:1.35rem; margin-bottom:0.5rem;">Arquitectura Recomendada</h3>
+          <p id="recDesc" style="color:var(--text-secondary); margin-bottom:1rem; font-size:1rem;"></p>
+          <div id="recWarnings" style="background:rgba(245, 158, 11, 0.1); border-left:3px solid var(--accent-amber); padding:10px 14px; border-radius:0 8px 8px 0; font-size:0.88rem; color:#fcd34d;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: QUIZ INTERACTIVO -->
+  <section id="quiz" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Evaluación de Conceptos</span>
+        <h2 class="section-title">6. Pon a Prueba tu Conocimiento</h2>
+        <p class="section-subtitle">
+          Certifica que dominas los límites arquitectónicos y la protección de datos entre capas:
+        </p>
+      </div>
+
+      <div class="quiz-card">
+        <div id="quizContainer">
+          <div class="quiz-question-box">
+            <div id="quizQuestionNumber" style="font-size:0.85rem; color:var(--accent-blue); font-weight:700; text-transform:uppercase; margin-bottom:6px;">Pregunta 1 de 4</div>
+            <h3 id="quizQuestionText" class="quiz-q-title"></h3>
+            <div id="quizOptionsContainer" class="quiz-options"></div>
+            <div id="quizFeedbackBox" class="quiz-feedback"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+            <div style="font-size:0.9rem; color:var(--text-muted);">
+              Aciertos: <span id="quizScore" style="color:var(--accent-emerald); font-weight:bold;">0</span> / <span id="quizTotal">4</span>
+            </div>
+            <button id="quizNextBtn" class="btn-primary" onclick="nextQuizQuestion()" style="display:none; padding:8px 18px; font-size:0.85rem;">
+              Siguiente Pregunta ▶
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p style="font-weight:700; margin-bottom:6px; color:var(--text-primary); font-size:1.05rem;">
+        BackendArch<span style="color:var(--accent-cyan)">.Jorge</span> • Masterclass de Arquitectura
+      </p>
+      <p style="margin-bottom:12px;">
+        Guía didáctica y práctica para comprender a fondo la separación de capas, inversión de dependencias y flujo de datos.
+      </p>
+      <p style="font-size:0.82rem;">
+        Ubicación local: <code>C:\Users\EDU\.gemini\arquitectura\index.html</code>
+      </p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // THEME TOGGLE
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    let isDark = true;
+
+    themeToggleBtn.addEventListener('click', () => {
+      isDark = !isDark;
+      if (!isDark) {
+        document.body.classList.add('light-theme');
+        themeText.textContent = 'Claro';
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+      } else {
+        document.body.classList.remove('light-theme');
+        themeText.textContent = 'Oscuro';
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+      }
+    });
+
+    // MAIN ARCHITECTURE TABS
+    function switchMainArch(archId) {
+      document.querySelectorAll('.arch-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.arch-panel').forEach(p => p.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      const targetPanel = document.getElementById(`panel-${archId}`);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+    }
+
+    // SUBNAV TABS INSIDE EACH ARCHITECTURE
+    function switchSubView(archKey, viewKey, btnElement) {
+      const panel = document.getElementById(`panel-${archKey}`);
+      if (!panel) return;
+
+      panel.querySelectorAll('.subnav-btn').forEach(b => b.classList.remove('active'));
+      panel.querySelectorAll('.subview-content').forEach(v => v.classList.remove('active'));
+
+      btnElement.classList.add('active');
+      const targetView = document.getElementById(`subview-${archKey}-${viewKey}`);
+      if (targetView) {
+        targetView.classList.add('active');
+      }
+    }
+
+    // ==========================================================
+    // SIMULATOR LOGIC & JORGE DATA PAYLOADS
+    // ==========================================================
+    let currentStep = 0;
+    let currentScenario = 'success';
+    let isPlaying = false;
+    let playInterval = null;
+
+    const simData = {
+      success: [
+        {
+          title: "Paso 1: Solicitud HTTP del Cliente (En Red)",
+          desc: "El cliente inicia la petición enviando un paquete HTTP POST con cabeceras y un cuerpo JSON crudo a través de la red.",
+          points: [
+            "<strong>Método & Ruta:</strong> POST /api/v1/users",
+            "<strong>Headers:</strong> Content-Type: application/json, Authorization: Bearer eyJhbG...",
+            "<strong>Cuerpo:</strong> Cadena de texto plano en UTF-8 conteniendo los datos de Jorge Dev.",
+            "<strong>Objetivo:</strong> Llegar al puerto de red del servidor (8080 o 443)."
+          ],
+          rule: "El cliente solo conoce la especificación de la API (Swagger); no sabe si el backend está en Java, Go o Node.js.",
+          lang: "HTTP REQUEST RAW",
+          file: "HTTP Payload",
+          code: `POST /api/v1/users HTTP/1.1
+Host: api.jorge-backend.io
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOi...
+
+{
+  "nombre": "Jorge Dev",
+  "email": "jorge.dev@backend.io",
+  "password": "PasswordSeguro2026!",
+  "rol": "ADMIN"
+}`
+        },
+        {
+          title: "Paso 2: Controller & DTO (Capa de Presentación / Web)",
+          desc: "El framework web intercepta la petición, valida la sintaxis y deserializa el JSON en un objeto DTO (Data Transfer Object).",
+          points: [
+            "<strong>Deserialización:</strong> El parser transforma el texto JSON en <code>CreateUserRequestDTO</code>.",
+            "<strong>Validación Sintáctica:</strong> Se evalúan anotaciones como <code>@NotBlank</code>, <code>@Email</code>, <code>@Size(min=8)</code>.",
+            "<strong>Seguridad:</strong> Se previene vulnerabilidad de 'Mass Assignment' ya que el DTO solo acepta los campos permitidos.",
+            "<strong>Aislamiento:</strong> El controlador NO tiene lógica de cálculo ni consultas SQL."
+          ],
+          rule: "El DTO es el escudo perimetral que asegura que solo datos válidos entren al corazón del sistema.",
+          lang: "JAVA CONTROLLER",
+          file: "UserController.java",
+          code: `@RestController
+@RequestMapping("/api/v1/users")
+public class UserController {
+
+    private final CreateUserUseCase createUserUseCase;
+    private final UserDTOMapper mapper;
+
+    @PostMapping
+    public ResponseEntity<UserResponseDTO> register(
+            @Valid @RequestBody CreateUserRequestDTO request) {
+        
+        // 1. DTO validado sintácticamente por el framework
+        // 2. Mapeamos a entidad de dominio y delegamos al caso de uso
+        User domainUser = mapper.toDomain(request);
+        User createdUser = createUserUseCase.execute(domainUser);
+        
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(mapper.toResponseDTO(createdUser));
+    }
+}`
+        },
+        {
+          title: "Paso 3: Mapeo DTO ➔ Entidad de Dominio",
+          desc: "Se convierte el DTO en un Modelo de Dominio puro. Esto desacopla el contrato web externo del modelo interno.",
+          points: [
+            "<strong>Limpieza:</strong> Se descartan campos no deseados y se limpian espacios en blanco.",
+            "<strong>Inmutabilidad:</strong> El modelo de dominio garantiza que sus invariantes de negocio se cumplan.",
+            "<strong>Protección:</strong> Si el nombre de un campo en la API cambia, la lógica de negocio interna permanece intacta."
+          ],
+          rule: "Las entidades de base de datos nunca deben exponerse en la API pública.",
+          lang: "JAVA MAPPER",
+          file: "UserDTOMapper.java",
+          code: `@Component
+public class UserDTOMapper {
+
+    public User toDomain(CreateUserRequestDTO dto) {
+        return new User(
+            null, // El ID aún no existe, lo asignará el sistema
+            dto.getNombre().trim(),
+            new Email(dto.getEmail().toLowerCase()),
+            dto.getPassword() // Será hasheado en la capa de negocio
+        );
+    }
+
+    public UserResponseDTO toResponseDTO(User user) {
+        // ¡LA CONTRASEÑA NUNCA SE DEVUELVE EN LA RESPUESTA!
+        return new UserResponseDTO(
+            user.getId(),
+            user.getNombre(),
+            user.getEmail().getValue(),
+            user.getCreatedAt()
+        );
+    }
+}`
+        },
+        {
+          title: "Paso 4: Domain Service / Caso de Uso (Lógica de Negocio)",
+          desc: "Aquí reside el núcleo de la aplicación: validaciones semánticas, reglas de negocio y transaccionalidad.",
+          points: [
+            "<strong>Regla de Negocio:</strong> ¿El correo de Jorge ya existe en el sistema?",
+            "<strong>Criptografía:</strong> Se hashea la contraseña con Argon2 o BCrypt.",
+            "<strong>Transaccionalidad:</strong> <code>@Transactional</code> asegura que si algo falla, no quede basura en la BD.",
+            "<strong>Disparo de Eventos:</strong> Se prepara el evento <code>UserRegisteredEvent</code>."
+          ],
+          rule: "Esta capa no sabe qué base de datos se usa; solo invoca la interfaz del repositorio (DIP).",
+          lang: "JAVA SERVICE",
+          file: "CreateUserService.java",
+          code: `@Service
+@Transactional
+public class CreateUserService implements CreateUserUseCase {
+
+    private final UserRepositoryPort userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final EventPublisher eventPublisher;
+
+    @Override
+    public User execute(User user) {
+        // 1. Regla de Negocio: Correo Único
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new EmailAlreadyInUseException("El correo ya está en uso");
+        }
+
+        // 2. Seguridad: Hashear contraseña
+        String hash = passwordEncoder.encode(user.getRawPassword());
+        user.assignHashedPassword(hash);
+
+        // 3. Persistir mediante interfaz
+        User savedUser = userRepository.save(user);
+
+        // 4. Emitir evento de dominio
+        eventPublisher.publish(new UserRegisteredEvent(savedUser.getId()));
+
+        return savedUser;
+    }
+}`
+        },
+        {
+          title: "Paso 5: Repository & ORM (Capa de Acceso a Datos)",
+          desc: "El repositorio traduce el modelo de negocio a sentencias SQL u operaciones de persistencia seguras.",
+          points: [
+            "<strong>Abstracción:</strong> El servicio solo ve métodos como <code>save(user)</code>.",
+            "<strong>Mapeo ORM:</strong> La entidad se mapea contra las columnas de la tabla <code>users</code>.",
+            "<strong>Parámetros Seguros:</strong> Se usa PreparedStatement para prevenir inyecciones SQL."
+          ],
+          rule: "Aislar el SQL en el repositorio permite cambiar de motor sin tocar el negocio.",
+          lang: "JAVA REPOSITORY & SQL",
+          file: "JpaUserRepositoryAdapter.java",
+          code: `@Repository
+public class JpaUserRepositoryAdapter implements UserRepositoryPort {
+
+    private final SpringDataJpaUserRepository springDataRepo;
+
+    @Override
+    public User save(User user) {
+        UserEntity entity = UserEntity.fromDomain(user);
+        UserEntity saved = springDataRepo.save(entity);
+        return saved.toDomain();
+    }
+
+    /* SQL Generado de forma segura:
+       INSERT INTO users (nombre, email, password_hash, created_at)
+       VALUES (?, ?, ?, NOW());
+    */
+}`
+        },
+        {
+          title: "Paso 6: Base de Datos & Viaje de Retorno",
+          desc: "El motor de base de datos comitea la transacción de forma ACID y la respuesta regresa transformada al cliente.",
+          points: [
+            "<strong>ACID Commit:</strong> Se valida la unicidad, se genera el ID autoincremental/UUID y se persiste en disco.",
+            "<strong>Retorno:</strong> BD retorna fila ➔ Repositorio hidrata entidad ➔ Servicio retorna a Controller ➔ Controller mapea a <code>UserResponseDTO</code>.",
+            "<strong>Respuesta Final:</strong> Código <strong>201 Created</strong> con JSON limpio (sin hash de password)."
+          ],
+          rule: "El ciclo se cierra: cada capa cumplió únicamente su rol sin acoplarse.",
+          lang: "HTTP 201 CREATED RESPONSE",
+          file: "Cliente recibe",
+          code: `HTTP/1.1 201 Created
+Content-Type: application/json
+Location: /api/v1/users/501
+Date: Wed, 14 Oct 2026 13:30:00 GMT
+
+{
+  "id": 501,
+  "nombre": "Jorge Dev",
+  "email": "jorge.dev@backend.io",
+  "createdAt": "2026-10-14T13:30:00.124Z"
+}
+
+/* Transacción exitosa completada en ~ 26ms */`
+        }
+      ],
+      validation_error: [
+        {
+          title: "Paso 1: Solicitud con Datos Malformados",
+          desc: "El cliente envía un email sin formato válido ('jorge-sin-arroba') y una contraseña de solo 3 caracteres.",
+          points: [
+            "La petición viaja por la red exactamente igual que una válida.",
+            "Llega al puerto HTTP del servidor."
+          ],
+          rule: "Nunca confíes en el frontend: cualquier usuario puede enviar peticiones con Postman o cURL salteándose la validación del navegador.",
+          lang: "HTTP REQUEST RAW",
+          file: "Payload Inválido",
+          code: `POST /api/v1/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "email": "jorge-sin-arroba",
+  "password": "123"
+}`
+        },
+        {
+          title: "Paso 2: ¡Freno Inmediato en Capa 2 (DTO Validation)! 🛑",
+          desc: "El validador de la capa web (@Valid) detecta que las restricciones del DTO se rompieron. ¡La petición NO llega jamás al Servicio ni a la Base de Datos!",
+          points: [
+            "<strong>Ahorro de Cómputo:</strong> Cero consultas a base de datos innecesarias.",
+            "<strong>Global Exception Handler:</strong> Captura la excepción y genera una respuesta RFC 7807 / 9457 estándar."
+          ],
+          rule: "Frena los errores de formato lo más cerca de la frontera exterior del sistema posible.",
+          lang: "GLOBAL EXCEPTION HANDLER",
+          file: "GlobalExceptionHandler.java",
+          code: `@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ProblemDetail> handleValidation(MethodArgumentNotValidException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Error de Validación en los Datos Enviados");
+        problem.setDetail("Uno o más campos no cumplen el formato requerido");
+        
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(err -> 
+            errors.put(err.getField(), err.getDefaultMessage())
+        );
+        problem.setProperty("invalid_fields", errors);
+        
+        return ResponseEntity.badRequest().body(problem);
+    }
+}`
+        },
+        {
+          title: "Paso 3: Respuesta 400 Bad Request Retornada",
+          desc: "El servidor retorna de inmediato el código 400 con el desglose exacto de los campos que deben corregirse.",
+          points: [
+            "Tiempo de respuesta ultrarrápido: ~ 2 milisegundos.",
+            "La base de datos y la capa de negocio quedaron 100% protegidas de basura."
+          ],
+          rule: "Respuestas de error predecibles mejoran la experiencia del frontend y la seguridad.",
+          lang: "HTTP 400 RESPONSE",
+          file: "RFC 7807 Error",
+          code: `HTTP/1.1 400 Bad Request
+Content-Type: application/problem+json
+
+{
+  "type": "https://api.jorge-backend.io/errors/validation",
+  "title": "Error de Validación en los Datos Enviados",
+  "status": 400,
+  "detail": "Uno o más campos no cumplen el formato requerido",
+  "invalid_fields": {
+    "nombre": "El nombre no puede estar en blanco",
+    "email": "Debe proporcionar una dirección de correo válida",
+    "password": "La contraseña debe tener mínimo 8 caracteres"
+  }
+}`
+        }
+      ],
+      business_error: [
+        {
+          title: "Paso 1: Solicitud Sintácticamente Válida",
+          desc: "El cliente envía un correo con formato correcto ('jorge.dev@backend.io'), pero que ya pertenece a otro usuario registrado.",
+          points: [
+            "Supera el DTO sin problemas porque la sintaxis es impecable.",
+            "El error no es de formato, sino una <strong>violación de regla de negocio</strong>."
+          ],
+          rule: "El controlador no sabe si un correo ya existe; esa regla le pertenece a la Capa de Negocio.",
+          lang: "HTTP REQUEST",
+          file: "POST Payload",
+          code: `{
+  "nombre": "Jorge Dev Duplicado",
+  "email": "jorge.dev@backend.io",
+  "password": "PasswordValido2026!"
+}`
+        },
+        {
+          title: "Paso 2: Supera Capa Web ➔ Falla en Capa de Negocio",
+          desc: "El servicio ejecuta la regla: <code>if (userRepository.existsByEmail(...)) throw new EmailAlreadyInUseException()</code>.",
+          points: [
+            "La lógica de negocio detecta la duplicidad.",
+            "Se cancela la operación antes de intentar insertar en BD."
+          ],
+          rule: "El servicio es el guardián de los invariantes y reglas de dominio.",
+          lang: "JAVA BUSINESS LAYER",
+          file: "CreateUserService.java",
+          code: `// En el Servicio de Negocio:
+if (userRepository.existsByEmail(user.getEmail())) {
+    // 💥 REGLA DE NEGOCIO VIOLADA:
+    throw new EmailAlreadyInUseException(
+        "El correo " + user.getEmail() + " ya se encuentra registrado"
+    );
+}`
+        },
+        {
+          title: "Paso 3: Excepción de Negocio Mapeada a HTTP 409 Conflict",
+          desc: "El Exception Handler traduce la excepción de dominio a un código HTTP semántico sin filtrar trazas técnicas de la BD.",
+          points: [
+            "Código HTTP 409 Conflict (o 422 Unprocessable Entity).",
+            "Cero fuga de nombres de tablas ni excepciones de Hibernate."
+          ],
+          rule: "Nunca envíes trazas de error de base de datos a clientes externos.",
+          lang: "HTTP 409 CONFLICT",
+          file: "Respuesta al Cliente",
+          code: `HTTP/1.1 409 Conflict
+Content-Type: application/problem+json
+
+{
+  "type": "https://api.jorge-backend.io/errors/email-duplicate",
+  "title": "Conflicto de Negocio",
+  "status": 409,
+  "detail": "El correo jorge.dev@backend.io ya se encuentra registrado.",
+  "timestamp": "2026-10-14T13:32:10Z"
+}`
+        }
+      ],
+      db_error: [
+        {
+          title: "Paso 1: Solicitud Válida que Falla en Infraestructura",
+          desc: "Todo el flujo funciona bien hasta que la Capa de Persistencia intenta contactar al clúster de Base de Datos y la red se corta.",
+          points: [
+            "La base de datos se cayó o agotó su pool de conexiones.",
+            "La transacción falla y hace Rollback automático."
+          ],
+          rule: "El sistema debe manejar caídas de infraestructura sin dejar inconsistencias.",
+          lang: "TIMEOUT EN PERSISTENCIA",
+          file: "Database Connection",
+          code: `// Fallo de conexión en JDBC Driver:
+org.postgresql.util.PSQLException: 
+The connection attempt failed: Connection refused: connect`
+        },
+        {
+          title: "Paso 2: Rollback & Máscara de Seguridad (500 Error)",
+          desc: "El servidor registra en sus logs internos la traza técnica para los desarrolladores, pero al cliente externo solo le entrega un mensaje seguro con un Trace ID.",
+          points: [
+            "<strong>Cero fuga de información técnica:</strong> Un atacante no debe saber la versión de PostgreSQL ni los puertos.",
+            "<strong>Trace ID:</strong> Código de correlación para que el usuario pueda contactar a soporte."
+          ],
+          rule: "Las excepciones de infraestructura jamás deben propagar datos confidenciales al exterior.",
+          lang: "HTTP 500 RESPONSE",
+          file: "Error Protegido",
+          code: `HTTP/1.1 500 Internal Server Error
+Content-Type: application/problem+json
+
+{
+  "type": "https://api.jorge-backend.io/errors/internal",
+  "title": "Error Interno del Servidor",
+  "status": 500,
+  "detail": "Ha ocurrido un error inesperado al procesar su solicitud. Intente nuevamente más tarde.",
+  "traceId": "trace-jorge-98f24a-b51c"
+}`
+        }
+      ]
+    };
+
+    function updateSimView() {
+      const scenarioSteps = simData[currentScenario];
+      if (currentStep >= scenarioSteps.length) {
+        currentStep = scenarioSteps.length - 1;
+      }
+
+      const stepData = scenarioSteps[currentStep];
+
+      // Pipeline UI
+      const pipelineSteps = document.querySelectorAll('.pipeline-step');
+      pipelineSteps.forEach((el, idx) => {
+        el.classList.remove('active', 'completed', 'error-state');
+        const oldPacket = el.querySelector('.data-packet');
+        if (oldPacket) oldPacket.remove();
+
+        if (idx < currentStep) {
+          el.classList.add('completed');
+        } else if (idx === currentStep) {
+          el.classList.add('active');
+          if (currentScenario.includes('error') && currentStep === scenarioSteps.length - 1) {
+            el.classList.add('error-state');
+          }
+          const packet = document.createElement('div');
+          packet.className = 'data-packet';
+          packet.textContent = currentScenario.includes('error') && currentStep === scenarioSteps.length - 1 ? '⚠️ Error' : 'Dato Activo';
+          el.appendChild(packet);
+        }
+      });
+
+      // Inspector UI
+      document.getElementById('inspectorTitle').innerHTML = stepData.title;
+      document.getElementById('inspectorDesc').textContent = stepData.desc;
+      document.getElementById('inspectorRule').textContent = stepData.rule;
+
+      const pointsList = document.getElementById('inspectorPoints');
+      pointsList.innerHTML = '';
+      stepData.points.forEach(pt => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="bullet-point">▸</span> <div>${pt}</div>`;
+        pointsList.appendChild(li);
+      });
+
+      // Code Box
+      document.getElementById('codeLang').textContent = stepData.lang;
+      document.getElementById('codeFile').textContent = stepData.file;
+      document.getElementById('codeDisplay').textContent = stepData.code;
+
+      // Buttons
+      document.getElementById('simPrevBtn').disabled = (currentStep === 0);
+      document.getElementById('simNextBtn').disabled = (currentStep === scenarioSteps.length - 1);
+    }
+
+    function nextStep() {
+      const scenarioSteps = simData[currentScenario];
+      if (currentStep < scenarioSteps.length - 1) {
+        currentStep++;
+        updateSimView();
+      } else {
+        stopPlay();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        updateSimView();
+      }
+    }
+
+    function goToStep(index) {
+      const scenarioSteps = simData[currentScenario];
+      if (index < scenarioSteps.length) {
+        currentStep = index;
+        updateSimView();
+      }
+    }
+
+    function resetSim() {
+      stopPlay();
+      currentStep = 0;
+      updateSimView();
+    }
+
+    function changeScenario(val) {
+      stopPlay();
+      currentScenario = val;
+      currentStep = 0;
+      updateSimView();
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        stopPlay();
+      } else {
+        startPlay();
+      }
+    }
+
+    function startPlay() {
+      isPlaying = true;
+      document.getElementById('simPlayBtn').innerHTML = '⏸ Pausar';
+      document.getElementById('simPlayBtn').classList.remove('primary');
+      playInterval = setInterval(() => {
+        const scenarioSteps = simData[currentScenario];
+        if (currentStep < scenarioSteps.length - 1) {
+          nextStep();
+        } else {
+          stopPlay();
+        }
+      }, 3500);
+    }
+
+    function stopPlay() {
+      isPlaying = false;
+      clearInterval(playInterval);
+      document.getElementById('simPlayBtn').innerHTML = '▶ Reproducir Automático';
+      document.getElementById('simPlayBtn').classList.add('primary');
+    }
+
+    updateSimView();
+
+    // ==========================================================
+    // DECISION TREE LOGIC
+    // ==========================================================
+    const userChoices = {
+      team: 'small',
+      complexity: 'crud',
+      scale: 'standard'
+    };
+
+    function selectDecision(category, val, element) {
+      userChoices[category] = val;
+      const parent = element.parentElement;
+      parent.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+
+    function calculateRecommendation() {
+      const { team, complexity, scale } = userChoices;
+      const box = document.getElementById('recommendationBox');
+      const title = document.getElementById('recTitle');
+      const desc = document.getElementById('recDesc');
+      const warnings = document.getElementById('recWarnings');
+
+      box.classList.add('show');
+
+      if (scale === 'events') {
+        title.innerHTML = '⚡ Arquitectura Dirigida por Eventos (EDA) + CQRS';
+        desc.innerHTML = 'Debido a tu requerimiento de alto volumen y streaming de eventos en tiempo real, un monolito síncrono creará cuellos de botella severos. Te conviene utilizar un broker distribuido como Apache Kafka o RabbitMQ, con consumidores especializados y separación de consultas (CQRS).';
+        warnings.innerHTML = '<strong>Atención Senior:</strong> Deberás garantizar consumidores idempotentes y aplicar el patrón Transactional Outbox para no perder eventos ante caídas de red.';
+      } else if (team === 'large' || scale === 'independent') {
+        title.innerHTML = '🧩 Microservicios con Bounded Contexts (o Monolito Modular Primero)';
+        desc.innerHTML = 'Con un equipo amplio de múltiples células y necesidad de despliegues independientes, los microservicios permiten que cada squad sea dueño de su ciclo de vida sin pisarse en despliegues. Sin embargo, asegúrate de modelar primero con precisión los límites de dominio (Domain-Driven Design).';
+        warnings.innerHTML = '<strong>Advertencia Senior:</strong> No comiences con microservicios si tu dominio aún no es estable. Si los límites de los servicios están mal diseñados, terminarás con un "Monolito Distribuido" (lo peor de ambos mundos).';
+      } else if (complexity === 'high' || complexity === 'medium') {
+        title.innerHTML = '⬡ Arquitectura Hexagonal (Ports & Adapters) o Clean Architecture';
+        desc.innerHTML = 'Tu lógica de negocio tiene reglas ricas que ameritan ser protegidas. Una arquitectura hexagonal te permitirá aislar tu dominio puro de los frameworks y de la base de datos, logrando una suite de tests unitarios súper rápida e independencia total de tecnologías externas.';
+        warnings.innerHTML = '<strong>Consejo Práctico Senior:</strong> Estructura el proyecto en un único repositorio modular (Monolito Limpio). Tendrás toda la elegancia de la arquitectura limpia sin el dolor de cabeza de red de los microservicios.';
+      } else {
+        title.innerHTML = '📦 Monolito en Capas Bien Estructurado (Layered N-Tier)';
+        desc.innerHTML = '¡Excelente decisión pragmática! Para un equipo pequeño con operaciones mayormente CRUD y tráfico estándar, una arquitectura en capas clásica (Controller ➔ Service ➔ Repository) te dará la máxima velocidad de entrega sin sobreingeniería.';
+        warnings.innerHTML = '<strong>Recomendación de Oro:</strong> Mantén los controladores ligeros y usa DTOs estrictos desde el primer día. Si el dominio se vuelve complejo más adelante, podrás migrar a Hexagonal con mínimo esfuerzo.';
+      }
+
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ==========================================================
+    // QUIZ LOGIC
+    // ==========================================================
+    const quizData = [
+      {
+        question: "¿Por qué es una mala práctica exponer directamente la Entidad de Base de Datos en el Controlador HTTP?",
+        options: [
+          { text: "Porque la base de datos arroja un error de sintaxis si se envía por HTTP.", correct: false },
+          { text: "Porque acopla el contrato público a la estructura de tablas y puede exponer datos sensibles (ej. passwords o tokens).", correct: true },
+          { text: "Porque los navegadores web solo pueden renderizar texto plano y no objetos ORM.", correct: false },
+          { text: "Porque duplica el tamaño de la memoria RAM del servidor.", correct: false }
+        ],
+        explanation: "¡Exacto! Usar DTOs evita filtraciones accidentales de campos sensibles, previene ataques de 'Mass Assignment' y permite que la base de datos cambie sin romper los contratos de los clientes."
+      },
+      {
+        question: "En la Arquitectura Hexagonal y Clean Architecture, ¿hacia dónde deben apuntar siempre las dependencias?",
+        options: [
+          { text: "Hacia afuera, para que el negocio controle las librerías externas.", correct: false },
+          { text: "Hacia la base de datos, porque los datos son lo más importante.", correct: false },
+          { text: "Hacia adentro (Hacia el Dominio), dependiendo de abstracciones e interfaces.", correct: true },
+          { text: "Bidireccionalmente, para máxima flexibilidad.", correct: false }
+        ],
+        explanation: "¡Correcto! La regla fundamental es que las capas externas dependen del dominio, pero el dominio nunca depende de frameworks, bases de datos ni herramientas externas."
+      },
+      {
+        question: "¿Cuál es el principal beneficio de una Arquitectura Dirigida por Eventos (EDA)?",
+        options: [
+          { text: "Desacoplamiento temporal y espacial: los productores y consumidores no necesitan conocerse ni estar activos simultáneamente.", correct: true },
+          { text: "Que elimina completamente la necesidad de usar bases de datos.", correct: false },
+          { text: "Que hace que todo el código sea 100% síncrono y bloqueante.", correct: false },
+          { text: "Que solo funciona si se programa en lenguaje C++.", correct: false }
+        ],
+        explanation: "¡Perfecto! El productor publica un evento de lo que ya ocurrió y sigue con su trabajo. Los consumidores procesan el mensaje a su propio ritmo sin bloquear al cliente."
+      },
+      {
+        question: "¿Qué rol cumple la Capa de Servicio (Application/Domain Service)?",
+        options: [
+          { text: "Recibir la conexión TCP cruda y parsear los headers HTTP.", correct: false },
+          { text: "Ejecutar y orquestar las reglas del negocio, validaciones semánticas y coordinar transacciones.", correct: true },
+          { text: "Almacenar los archivos estáticos HTML y CSS del frontend.", correct: false },
+          { text: "Crear físicamente las tablas en el disco duro del servidor.", correct: false }
+        ],
+        explanation: "¡Excelente! La capa de servicio es el director de orquesta: aplica las reglas que justifican la existencia del software y garantiza que los datos sean coherentes."
+      }
+    ];
+
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+    let answered = false;
+
+    function loadQuizQuestion() {
+      answered = false;
+      const q = quizData[currentQuizIndex];
+      document.getElementById('quizQuestionNumber').textContent = `Pregunta ${currentQuizIndex + 1} de ${quizData.length}`;
+      document.getElementById('quizQuestionText').textContent = q.question;
+      document.getElementById('quizTotal').textContent = quizData.length;
+
+      const optsContainer = document.getElementById('quizOptionsContainer');
+      optsContainer.innerHTML = '';
+
+      const feedbackBox = document.getElementById('quizFeedbackBox');
+      feedbackBox.className = 'quiz-feedback';
+      feedbackBox.style.display = 'none';
+
+      document.getElementById('quizNextBtn').style.display = 'none';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt';
+        btn.textContent = `${String.fromCharCode(65 + idx)}) ${opt.text}`;
+        btn.onclick = () => selectQuizAnswer(idx, btn);
+        optsContainer.appendChild(btn);
+      });
+    }
+
+    function selectQuizAnswer(index, btnElement) {
+      if (answered) return;
+      answered = true;
+
+      const q = quizData[currentQuizIndex];
+      const isCorrect = q.options[index].correct;
+      const feedbackBox = document.getElementById('quizFeedbackBox');
+      const allButtons = document.querySelectorAll('.quiz-opt');
+
+      allButtons.forEach(b => b.classList.add('disabled'));
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        quizScore++;
+        document.getElementById('quizScore').textContent = quizScore;
+        feedbackBox.className = 'quiz-feedback good show';
+        feedbackBox.innerHTML = `<strong>¡Respuesta Correcta!</strong> ${q.explanation}`;
+      } else {
+        btnElement.classList.add('wrong');
+        q.options.forEach((opt, idx) => {
+          if (opt.correct) {
+            allButtons[idx].classList.add('correct');
+          }
+        });
+        feedbackBox.className = 'quiz-feedback bad show';
+        feedbackBox.innerHTML = `<strong>Incorrecto.</strong> ${q.explanation}`;
+      }
+
+      const nextBtn = document.getElementById('quizNextBtn');
+      if (currentQuizIndex < quizData.length - 1) {
+        nextBtn.textContent = 'Siguiente Pregunta ▶';
+      } else {
+        nextBtn.textContent = 'Ver Resultado Final 🎉';
+      }
+      nextBtn.style.display = 'inline-flex';
+    }
+
+    function nextQuizQuestion() {
+      if (currentQuizIndex < quizData.length - 1) {
+        currentQuizIndex++;
+        loadQuizQuestion();
+      } else {
+        showQuizFinalScore();
+      }
+    }
+
+    function showQuizFinalScore() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = `
+        <div style="text-align:center; padding:2rem 1rem;">
+          <div style="font-size:3.5rem; margin-bottom:1rem;">🏆</div>
+          <h3 style="font-size:1.8rem; margin-bottom:0.75rem;">¡Evaluación Completada!</h3>
+          <p style="font-size:1.15rem; color:var(--text-secondary); margin-bottom:1.5rem;">
+            Obtuviste <strong style="color:var(--accent-emerald); font-size:1.4rem;">${quizScore}</strong> de <strong style="font-size:1.4rem;">${quizData.length}</strong> aciertos.
+          </p>
+          <p style="max-width:550px; margin:0 auto 1.75rem; color:var(--text-muted); font-size:0.95rem;">
+            ${quizScore === quizData.length ? 
+              '¡Dominio absoluto! Comprendes los límites arquitectónicos, la inversión de dependencias y la protección de datos entre capas como un Senior Backend Engineer.' : 
+              '¡Muy buen trabajo! Puedes repasar los escenarios en el simulador interactivo para afianzar cómo viajan los datos en cada etapa.'}
+          </p>
+          <button class="btn-primary" onclick="restartQuiz()">
+            ↺ Intentar el Quiz Nuevamente
+          </button>
+        </div>
+      `;
+    }
+
+    function restartQuiz() {
+      currentQuizIndex = 0;
+      quizScore = 0;
+      location.reload();
+    }
+
+    loadQuizQuestion();
+  </script>
+</body>
+</html>
